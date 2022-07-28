@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Drink Picker</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+</resources>
