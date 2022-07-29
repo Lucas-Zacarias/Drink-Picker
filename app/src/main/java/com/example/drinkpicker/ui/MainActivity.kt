@@ -16,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -26,9 +27,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.drinkpicker.R
 import com.example.drinkpicker.data.models.Drink
 import com.example.drinkpicker.ui.theme.DrinkPickerTheme
+import com.example.drinkpicker.ui.theme.Purple700
+import com.example.drinkpicker.ui.theme.VoteButton
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonType
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSCustomLoadingEffect
@@ -85,7 +89,7 @@ class MainActivity : ComponentActivity() {
             LazyRow(
                 modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
             ) {
                 items(
@@ -138,8 +142,8 @@ class MainActivity : ComponentActivity() {
                 painter = painterResource(imageId),
                 contentDescription = imageDescription,
                 modifier = Modifier
-                    .size(height = 300.dp, width = 200.dp)
-                    .clip(RoundedCornerShape(20)),
+                    .size(height = 400.dp, width = 300.dp)
+                    .clip(RoundedCornerShape(10)),
                 contentScale = ContentScale.Crop
             )
 
@@ -147,8 +151,8 @@ class MainActivity : ComponentActivity() {
 
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CUSTOM,
-                width = 200.dp,
-                height = 40.dp,
+                width = 250.dp,
+                height = 50.dp,
                 onClick = {
                     ssButtonState = SSButtonState.LOADING
                     Timer().schedule(1000) {
@@ -156,9 +160,10 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 buttonState = ssButtonState,
-                assetColor = Color.Black,
+                assetColor = Color.White,
                 text = name,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+                fontSize = 24.sp,
+                colors = ButtonDefaults.buttonColors(backgroundColor = VoteButton),
                 customLoadingIconPainter = painterResource(R.drawable.loading_wine_cup),
                 customLoadingEffect = SSCustomLoadingEffect(
                     rotation = true,
@@ -167,7 +172,10 @@ class MainActivity : ComponentActivity() {
                 )
             )
 
-            Text(text = description, modifier = Modifier.padding(top = 4.dp))
+            Text(text = description,
+                style = MaterialTheme.typography.h3,
+                modifier = Modifier.padding(top = 4.dp),
+                color = Color.Black)
 
         }
     }
