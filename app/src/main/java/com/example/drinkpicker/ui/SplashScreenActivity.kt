@@ -71,7 +71,7 @@ private fun Components() {
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview2() {
+fun SplashScreenPreview() {
     DrinkPickerTheme {
         Components()
     }

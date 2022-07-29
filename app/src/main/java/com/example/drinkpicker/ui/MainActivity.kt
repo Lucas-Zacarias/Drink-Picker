@@ -3,22 +3,19 @@ package com.example.drinkpicker.ui
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
-import android.view.View
-import android.widget.LinearLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -28,9 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.example.drinkpicker.R
 import com.example.drinkpicker.data.models.Drink
 import com.example.drinkpicker.ui.theme.DrinkPickerTheme
@@ -51,7 +46,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DrinkPickerTheme {
-                Surface(modifier = Modifier.fillMaxSize().background(color = Color.White)){
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White) {
                     Components()
                 }
             }
@@ -105,7 +102,6 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun DrinkItem(drink: Drink) {
         DrinkView(
-            id = drink.id,
             name = drink.name ?: "",
             description = drink.description ?: "",
             imageId = drink.imageId!!,
@@ -117,19 +113,18 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
     fun DrinkView(
-        id: Long?,
         name: String = "",
         description: String = "",
         imageId: Int,
         imageDescription: String = ""
     ) {
-        val mapOfDrink = viewModel.mapOfDrinksVotesInDB.value
         var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
-        var expandable by remember { mutableStateOf(false) }
         val scrollState = rememberScrollState()
         var modifier =
             if(resources.configuration.orientation == ORIENTATION_LANDSCAPE)
-                Modifier.fillMaxSize().verticalScroll(scrollState)
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
             else
                 Modifier.fillMaxSize()
 
@@ -139,50 +134,11 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center
         ) {
 
-           /* Box(contentAlignment = Alignment.TopStart, modifier = Modifier.padding(bottom = 8.dp)) {
-                Image(
-                    painter = painterResource(imageId),
-                    contentDescription = imageDescription,
-                    modifier = Modifier.size(height = 300.dp, width = 200.dp)
-                        .clip(RoundedCornerShape(20)),
-                    contentScale = ContentScale.Crop
-                )
-
-                Card(
-                    shape = CircleShape,
-                    modifier = Modifier.size(height = 60.dp, width = 70.dp)
-                        .padding(start = 12.dp, top = 12.dp),
-                    border = BorderStroke(width = 1.dp, color = Color.Black)
-                ) {
-                    Row(
-                        modifier = Modifier.background(color = Color.White),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Surface(
-                            modifier = Modifier.size(40.dp)
-                                .clickable { expandable = !expandable },
-                            color = Color.White
-                        ) {
-                            WineCupProgress(mapOfDrink[id])
-                        }
-
-                        AnimatedVisibility(expandable) {
-                            Text(
-                                modifier = Modifier.padding(end = 2.dp),
-                                text = "${mapOfDrink[id] ?: 0}",
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-            }*/
-
             Image(
                 painter = painterResource(imageId),
                 contentDescription = imageDescription,
-                modifier = Modifier.size(height = 300.dp, width = 200.dp)
+                modifier = Modifier
+                    .size(height = 300.dp, width = 200.dp)
                     .clip(RoundedCornerShape(20)),
                 contentScale = ContentScale.Crop
             )
@@ -195,11 +151,6 @@ class MainActivity : ComponentActivity() {
                 height = 40.dp,
                 onClick = {
                     ssButtonState = SSButtonState.LOADING
-                    if (mapOfDrink[id!!] == null) {
-                        viewModel.insertDrinkIntoDB(id)
-                    } else {
-                        viewModel.updateVotesForDrink(id)
-                    }
                     Timer().schedule(1000) {
                         ssButtonState = SSButtonState.IDLE
                     }
@@ -220,23 +171,4 @@ class MainActivity : ComponentActivity() {
 
         }
     }
-
-        @Composable
-        private fun WineCupProgress(votes: Int?) {
-            AndroidView(
-                factory = { ctx ->
-                    View(ctx).apply {
-                        layoutParams = LinearLayout.LayoutParams(100, 100)
-                        background = getDrawable(R.drawable.progress_wine_cup)
-                    }
-                },
-                update = {
-                    var level = 0
-                    if (votes != null) {
-                        level = 200 * votes
-                    }
-                    it.background.level = level
-                }
-            )
-        }
 }
