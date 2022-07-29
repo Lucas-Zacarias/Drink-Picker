@@ -11,8 +11,6 @@ import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -53,7 +51,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DrinkPickerTheme {
-                Components()
+                Surface(modifier = Modifier.fillMaxSize().background(color = Color.White)){
+                    Components()
+                }
             }
         }
     }
@@ -61,20 +61,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun Components() {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Background()
-            DrinkList(viewModel.drinkMockList.value)
-        }
-    }
-
-    @Composable
-    fun Background() {
-        Image(
-            painter = painterResource(R.drawable.background),
-            contentDescription = "App background image",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        DrinkList(viewModel.drinkMockList.value)
     }
 
     @Composable
@@ -121,9 +108,8 @@ class MainActivity : ComponentActivity() {
             id = drink.id,
             name = drink.name ?: "",
             description = drink.description ?: "",
-            imageId = drink.imageId ?: R.drawable.wine_icon,
-            imageDescription = drink.imageDescription ?: "",
-            imageUrl = null,
+            imageId = drink.imageId!!,
+            imageDescription = drink.imageDescription ?: ""
         )
     }
 
@@ -135,7 +121,6 @@ class MainActivity : ComponentActivity() {
         name: String = "",
         description: String = "",
         imageId: Int,
-        imageUrl: String?,
         imageDescription: String = ""
     ) {
         val mapOfDrink = viewModel.mapOfDrinksVotesInDB.value
@@ -154,7 +139,7 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center
         ) {
 
-            Box(contentAlignment = Alignment.TopStart, modifier = Modifier.padding(bottom = 8.dp)) {
+           /* Box(contentAlignment = Alignment.TopStart, modifier = Modifier.padding(bottom = 8.dp)) {
                 Image(
                     painter = painterResource(imageId),
                     contentDescription = imageDescription,
@@ -192,16 +177,17 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-            }
+            }*/
 
-            /*Image(
+            Image(
                 painter = painterResource(imageId),
                 contentDescription = imageDescription,
                 modifier = Modifier.size(height = 300.dp, width = 200.dp)
-                    .clip(RoundedCornerShape(20))
-                    .background(color = Color.LightGray),
+                    .clip(RoundedCornerShape(20)),
                 contentScale = ContentScale.Crop
-            )*/
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CUSTOM,
