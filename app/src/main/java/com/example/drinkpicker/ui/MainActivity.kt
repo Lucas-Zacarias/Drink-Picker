@@ -139,7 +139,7 @@ class MainActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center
         ) {
 
-           /* Box(contentAlignment = Alignment.TopStart, modifier = Modifier.padding(bottom = 8.dp)) {
+            Box(contentAlignment = Alignment.TopStart, modifier = Modifier.padding(bottom = 8.dp)) {
                 Image(
                     painter = painterResource(imageId),
                     contentDescription = imageDescription,
@@ -177,17 +177,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-            }*/
-
-            Image(
-                painter = painterResource(imageId),
-                contentDescription = imageDescription,
-                modifier = Modifier.size(height = 300.dp, width = 200.dp)
-                    .clip(RoundedCornerShape(20)),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+            }
 
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CUSTOM,
