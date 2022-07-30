@@ -27,11 +27,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.drinkpicker.R
 import com.example.drinkpicker.data.models.Drink
 import com.example.drinkpicker.ui.theme.DrinkPickerTheme
-import com.example.drinkpicker.ui.theme.Purple700
 import com.example.drinkpicker.ui.theme.VoteButton
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonType
@@ -162,7 +160,7 @@ class MainActivity : ComponentActivity() {
                 buttonState = ssButtonState,
                 assetColor = Color.White,
                 text = name,
-                fontSize = 24.sp,
+                fontSize = MaterialTheme.typography.h2.fontSize,
                 colors = ButtonDefaults.buttonColors(backgroundColor = VoteButton),
                 customLoadingIconPainter = painterResource(R.drawable.loading_wine_cup),
                 customLoadingEffect = SSCustomLoadingEffect(
