@@ -1,7 +1,5 @@
 package com.example.drinkpicker.ui
 
-import android.content.res.Configuration
-import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,11 +24,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.drinkpicker.R
 import com.example.drinkpicker.data.models.Drink
 import com.example.drinkpicker.ui.theme.DrinkPickerTheme
 import com.example.drinkpicker.ui.theme.VoteButton
+import com.example.drinkpicker.utils.WindowSize
+import com.example.drinkpicker.utils.WindowType
+import com.example.drinkpicker.utils.rememberWindowSize
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonType
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSCustomLoadingEffect
@@ -48,10 +50,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DrinkPickerTheme {
+                val windowSize = rememberWindowSize()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White) {
-                    Components()
+                    Components(windowSize = windowSize)
                 }
             }
         }
@@ -59,16 +62,14 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun Components() {
-        DrinkList(viewModel.drinkMockList.value)
+    fun Components(windowSize: WindowSize) {
+        DrinkList(drinks = viewModel.drinkMockList.value, windowSize = windowSize)
     }
 
     @Composable
-    fun DrinkList(drinks: List<Drink>) {
-        var orientation by remember { mutableStateOf(resources.configuration.orientation) }
-
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+    fun DrinkList(drinks: List<Drink>, windowSize: WindowSize) {
+        if(windowSize.width == WindowType.Compact //for mobile device size in portrait mode
+            || windowSize.height == WindowType.Expanded){ //for tablet device size in portrait mode
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,10 +81,11 @@ class MainActivity : ComponentActivity() {
                     key = { drink ->
                         drink.id!!
                     }) { drink ->
-                    DrinkItem(drink)
+                    DrinkItem(drink, isPortrait = true, windowSize)
                 }
             }
-        } else if (orientation == ORIENTATION_LANDSCAPE) {
+        }else if(windowSize.width == WindowType.Expanded //for tablet device size in landscape mode
+            || windowSize.height == WindowType.Compact){ //for mobile device size in landscape mode
             LazyRow(
                 modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -95,19 +97,21 @@ class MainActivity : ComponentActivity() {
                     key = { drink ->
                         drink.id!!
                     }) { drink ->
-                        DrinkItem(drink)
+                    DrinkItem(drink, isPortrait = false, windowSize)
                 }
             }
         }
     }
 
     @Composable
-    fun DrinkItem(drink: Drink) {
+    fun DrinkItem(drink: Drink, isPortrait: Boolean, windowSize: WindowSize) {
         DrinkView(
             name = drink.name ?: "",
             description = drink.description ?: "",
             imageId = drink.imageId!!,
-            imageDescription = drink.imageDescription ?: ""
+            imageDescription = drink.imageDescription ?: "",
+            isPortrait = isPortrait,
+            windowSize = windowSize
         )
     }
 
@@ -118,17 +122,19 @@ class MainActivity : ComponentActivity() {
         name: String = "",
         description: String = "",
         imageId: Int,
-        imageDescription: String = ""
+        imageDescription: String = "",
+        isPortrait: Boolean,
+        windowSize: WindowSize
     ) {
         var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
         val scrollState = rememberScrollState()
-        var modifier =
-            if(resources.configuration.orientation == ORIENTATION_LANDSCAPE)
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-            else
-                Modifier.fillMaxSize()
+        val modifier = if(isPortrait){
+            Modifier.fillMaxSize()
+        }else{
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        }
 
         Column(
             modifier = modifier,
@@ -140,7 +146,8 @@ class MainActivity : ComponentActivity() {
                 painter = painterResource(imageId),
                 contentDescription = imageDescription,
                 modifier = Modifier
-                    .size(height = 400.dp, width = 300.dp)
+                    .size(height = if(isATabletDevice(isPortrait, windowSize)) 400.dp else 300.dp,
+                        width = if(isATabletDevice(isPortrait, windowSize)) 300.dp else 200.dp)
                     .clip(RoundedCornerShape(10)),
                 contentScale = ContentScale.Crop
             )
@@ -149,8 +156,8 @@ class MainActivity : ComponentActivity() {
 
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CUSTOM,
-                width = 250.dp,
-                height = 50.dp,
+                width = if(isATabletDevice(isPortrait, windowSize)) 250.dp else 200.dp,
+                height = if(isATabletDevice(isPortrait, windowSize)) 50.dp else 40.dp,
                 onClick = {
                     ssButtonState = SSButtonState.LOADING
                     Timer().schedule(1000) {
@@ -160,7 +167,10 @@ class MainActivity : ComponentActivity() {
                 buttonState = ssButtonState,
                 assetColor = Color.White,
                 text = name,
-                fontSize = MaterialTheme.typography.h2.fontSize,
+                fontSize = if(isATabletDevice(isPortrait, windowSize))
+                    MaterialTheme.typography.h2.fontSize
+                else
+                    MaterialTheme.typography.h4.fontSize,
                 colors = ButtonDefaults.buttonColors(backgroundColor = VoteButton),
                 customLoadingIconPainter = painterResource(R.drawable.loading_wine_cup),
                 customLoadingEffect = SSCustomLoadingEffect(
@@ -171,10 +181,28 @@ class MainActivity : ComponentActivity() {
             )
 
             Text(text = description,
-                style = MaterialTheme.typography.h3,
-                modifier = Modifier.padding(top = 4.dp),
-                color = Color.Black)
+                style = if(isATabletDevice(isPortrait, windowSize))
+                    MaterialTheme.typography.h4
+                else
+                    MaterialTheme.typography.h5,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(200.dp).padding(top = 4.dp)
+            )
 
         }
+    }
+
+    private fun isATabletDevice(isPortrait: Boolean, windowSize: WindowSize): Boolean{
+        /*
+        * function used for setting  
+        */
+        val isATabletDevice: Boolean
+        if(isPortrait){
+            isATabletDevice = windowSize.width != WindowType.Compact
+        }else{
+            isATabletDevice = windowSize.height != WindowType.Compact
+        }
+        return isATabletDevice
     }
 }
