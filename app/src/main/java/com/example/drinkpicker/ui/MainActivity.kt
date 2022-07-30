@@ -53,7 +53,8 @@ class MainActivity : ComponentActivity() {
                 val windowSize = rememberWindowSize()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White) {
+                    color = Color.White
+                ) {
                     Components(windowSize = windowSize)
                 }
             }
@@ -68,8 +69,9 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun DrinkList(drinks: List<Drink>, windowSize: WindowSize) {
-        if(windowSize.width == WindowType.Compact //for mobile device size in portrait mode
-            || windowSize.height == WindowType.Expanded){ //for tablet device size in portrait mode
+        if (windowSize.width == WindowType.Compact //for mobile device size in portrait mode
+            || windowSize.height == WindowType.Expanded //for tablet device size in portrait mode
+        ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -84,8 +86,9 @@ class MainActivity : ComponentActivity() {
                     DrinkItem(drink, isPortrait = true, windowSize)
                 }
             }
-        }else if(windowSize.width == WindowType.Expanded //for tablet device size in landscape mode
-            || windowSize.height == WindowType.Compact){ //for mobile device size in landscape mode
+        } else if (windowSize.width == WindowType.Expanded //for tablet device size in landscape mode
+            || windowSize.height == WindowType.Compact //for mobile device size in landscape mode
+        ) {
             LazyRow(
                 modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -128,9 +131,9 @@ class MainActivity : ComponentActivity() {
     ) {
         var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
         val scrollState = rememberScrollState()
-        val modifier = if(isPortrait){
+        val modifier = if (isPortrait) {
             Modifier.fillMaxSize()
-        }else{
+        } else {
             Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
@@ -146,8 +149,10 @@ class MainActivity : ComponentActivity() {
                 painter = painterResource(imageId),
                 contentDescription = imageDescription,
                 modifier = Modifier
-                    .size(height = if(isATabletDevice(isPortrait, windowSize)) 400.dp else 300.dp,
-                        width = if(isATabletDevice(isPortrait, windowSize)) 300.dp else 200.dp)
+                    .size(
+                        height = if (isATabletDevice(isPortrait, windowSize)) 400.dp else 300.dp,
+                        width = if (isATabletDevice(isPortrait, windowSize)) 300.dp else 200.dp
+                    )
                     .clip(RoundedCornerShape(10)),
                 contentScale = ContentScale.Crop
             )
@@ -156,8 +161,8 @@ class MainActivity : ComponentActivity() {
 
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CUSTOM,
-                width = if(isATabletDevice(isPortrait, windowSize)) 250.dp else 200.dp,
-                height = if(isATabletDevice(isPortrait, windowSize)) 50.dp else 40.dp,
+                width = if (isATabletDevice(isPortrait, windowSize)) 250.dp else 200.dp,
+                height = if (isATabletDevice(isPortrait, windowSize)) 50.dp else 40.dp,
                 onClick = {
                     ssButtonState = SSButtonState.LOADING
                     Timer().schedule(1000) {
@@ -167,7 +172,7 @@ class MainActivity : ComponentActivity() {
                 buttonState = ssButtonState,
                 assetColor = Color.White,
                 text = name,
-                fontSize = if(isATabletDevice(isPortrait, windowSize))
+                fontSize = if (isATabletDevice(isPortrait, windowSize))
                     MaterialTheme.typography.h2.fontSize
                 else
                     MaterialTheme.typography.h4.fontSize,
@@ -180,27 +185,31 @@ class MainActivity : ComponentActivity() {
                 )
             )
 
-            Text(text = description,
-                style = if(isATabletDevice(isPortrait, windowSize))
+            Text(
+                text = description,
+                style = if (isATabletDevice(isPortrait, windowSize))
                     MaterialTheme.typography.h4
                 else
                     MaterialTheme.typography.h5,
                 color = Color.Black,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.width(200.dp).padding(top = 4.dp)
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(top = 4.dp)
             )
 
         }
     }
 
-    private fun isATabletDevice(isPortrait: Boolean, windowSize: WindowSize): Boolean{
+    private fun isATabletDevice(isPortrait: Boolean, windowSize: WindowSize): Boolean {
         /*
-        * function used for setting  
+        * function used to set the size values of the elements according
+        * to the type of device (cell phone, tablet)
         */
         val isATabletDevice: Boolean
-        if(isPortrait){
+        if (isPortrait) {
             isATabletDevice = windowSize.width != WindowType.Compact
-        }else{
+        } else {
             isATabletDevice = windowSize.height != WindowType.Compact
         }
         return isATabletDevice
