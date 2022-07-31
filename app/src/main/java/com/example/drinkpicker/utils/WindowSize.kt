@@ -7,6 +7,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 
+
+/*
+* Values obtained from
+* https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes
+*/
+
 data class WindowSize(
     val width: WindowType,
     val height: WindowType

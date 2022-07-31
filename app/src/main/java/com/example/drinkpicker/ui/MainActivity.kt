@@ -1,5 +1,6 @@
 package com.example.drinkpicker.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -69,9 +70,9 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun DrinkList(drinks: List<Drink>, windowSize: WindowSize) {
-        if (windowSize.width == WindowType.Compact //for mobile device size in portrait mode
-            || windowSize.height == WindowType.Expanded //for tablet device size in portrait mode
-        ) {
+        val orientation = resources.configuration.orientation
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,9 +87,7 @@ class MainActivity : ComponentActivity() {
                     DrinkItem(drink, isPortrait = true, windowSize)
                 }
             }
-        } else if (windowSize.width == WindowType.Expanded //for tablet device size in landscape mode
-            || windowSize.height == WindowType.Compact //for mobile device size in landscape mode
-        ) {
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             LazyRow(
                 modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -210,8 +209,20 @@ class MainActivity : ComponentActivity() {
         val isATabletDevice: Boolean
         if (isPortrait) {
             isATabletDevice = windowSize.width != WindowType.Compact
+            /*
+            * if the device is in portrait mode, windowSize.width is used to know
+            * if it is a cell phone or a tablet.
+            * If it is different of WindowType.Compact it means that it is a tablet,
+            * otherwise it is a cell phone.
+            */
         } else {
             isATabletDevice = windowSize.height != WindowType.Compact
+            /*
+            * if the device is in landscape mode, windowSize.height is used to know
+            * if it is a cell phone or a tablet.
+            * If it is different to WindowType.Compact it means that it is a tablet,
+            * otherwise it is a cell phone.
+            */
         }
         return isATabletDevice
     }
