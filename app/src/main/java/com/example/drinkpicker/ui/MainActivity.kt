@@ -131,6 +131,7 @@ class MainActivity : ComponentActivity() {
     ) {
         var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
         val scrollState = rememberScrollState()
+        val isTabletDevice = isATabletDevice(isPortrait, windowSize)
         val modifier = if (isPortrait) {
             Modifier.fillMaxSize()
         } else {
@@ -150,8 +151,8 @@ class MainActivity : ComponentActivity() {
                 contentDescription = imageDescription,
                 modifier = Modifier
                     .size(
-                        height = if (isATabletDevice(isPortrait, windowSize)) 400.dp else 300.dp,
-                        width = if (isATabletDevice(isPortrait, windowSize)) 300.dp else 200.dp
+                        height = if (isTabletDevice) 400.dp else 300.dp,
+                        width = if (isTabletDevice) 300.dp else 200.dp
                     )
                     .clip(RoundedCornerShape(10)),
                 contentScale = ContentScale.Crop
@@ -161,8 +162,8 @@ class MainActivity : ComponentActivity() {
 
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CUSTOM,
-                width = if (isATabletDevice(isPortrait, windowSize)) 250.dp else 200.dp,
-                height = if (isATabletDevice(isPortrait, windowSize)) 50.dp else 40.dp,
+                width = if (isTabletDevice) 250.dp else 200.dp,
+                height = if (isTabletDevice) 50.dp else 40.dp,
                 onClick = {
                     ssButtonState = SSButtonState.LOADING
                     Timer().schedule(1000) {
@@ -172,7 +173,7 @@ class MainActivity : ComponentActivity() {
                 buttonState = ssButtonState,
                 assetColor = Color.White,
                 text = name,
-                fontSize = if (isATabletDevice(isPortrait, windowSize))
+                fontSize = if (isTabletDevice)
                     MaterialTheme.typography.h2.fontSize
                 else
                     MaterialTheme.typography.h4.fontSize,
@@ -187,7 +188,7 @@ class MainActivity : ComponentActivity() {
 
             Text(
                 text = description,
-                style = if (isATabletDevice(isPortrait, windowSize))
+                style = if (isTabletDevice)
                     MaterialTheme.typography.h4
                 else
                     MaterialTheme.typography.h5,
