@@ -17,10 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,11 +26,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.drinkpicker.R
 import com.example.drinkpicker.data.models.Drink
 import com.example.drinkpicker.ui.theme.DrinkPickerTheme
+import com.example.drinkpicker.ui.theme.VoteButton
+import com.example.drinkpicker.utils.WindowSize
+import com.example.drinkpicker.utils.WindowType
+import com.example.drinkpicker.utils.rememberWindowSize
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonState
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSButtonType
 import com.simform.ssjetpackcomposeprogressbuttonlibrary.SSCustomLoadingEffect
@@ -51,8 +53,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DrinkPickerTheme {
-                Surface(modifier = Modifier.fillMaxSize().background(color = Color.White)){
-                    Components()
+                val windowSize = rememberWindowSize()
+                Surface(
+                    modifier = Modifier
+                    .fillMaxSize(),
+                    color = Color.White
+                    ){
+                    Components(windowSize = windowSize)
                 }
             }
         }
@@ -60,14 +67,13 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun Components() {
-        DrinkList(viewModel.drinkMockList.value)
+    fun Components(windowSize: WindowSize) {
+        DrinkList(viewModel.drinkMockList.value, windowSize = windowSize)
     }
 
     @Composable
-    fun DrinkList(drinks: List<Drink>) {
-        var orientation by remember { mutableStateOf(resources.configuration.orientation) }
-
+    fun DrinkList(drinks: List<Drink>, windowSize: WindowSize) {
+        val orientation = resources.configuration.orientation
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             LazyColumn(
@@ -81,14 +87,14 @@ class MainActivity : ComponentActivity() {
                     key = { drink ->
                         drink.id!!
                     }) { drink ->
-                    DrinkItem(drink)
+                    DrinkItem(drink, isPortrait = true, windowSize = windowSize)
                 }
             }
         } else if (orientation == ORIENTATION_LANDSCAPE) {
             LazyRow(
                 modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
             ) {
                 items(
@@ -96,20 +102,22 @@ class MainActivity : ComponentActivity() {
                     key = { drink ->
                         drink.id!!
                     }) { drink ->
-                        DrinkItem(drink)
+                        DrinkItem(drink, isPortrait = false, windowSize = windowSize)
                 }
             }
         }
     }
 
     @Composable
-    fun DrinkItem(drink: Drink) {
+    fun DrinkItem(drink: Drink, isPortrait: Boolean, windowSize: WindowSize) {
         DrinkView(
             id = drink.id,
             name = drink.name ?: "",
             description = drink.description ?: "",
             imageId = drink.imageId!!,
-            imageDescription = drink.imageDescription ?: ""
+            imageDescription = drink.imageDescription ?: "",
+            isPortrait = isPortrait,
+            windowSize = windowSize
         )
     }
 
@@ -121,17 +129,22 @@ class MainActivity : ComponentActivity() {
         name: String = "",
         description: String = "",
         imageId: Int,
-        imageDescription: String = ""
+        imageDescription: String = "",
+        isPortrait: Boolean,
+        windowSize: WindowSize
     ) {
         val mapOfDrink = viewModel.mapOfDrinksVotesInDB.value
         var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
         var expandable by remember { mutableStateOf(false) }
         val scrollState = rememberScrollState()
-        var modifier =
-            if(resources.configuration.orientation == ORIENTATION_LANDSCAPE)
-                Modifier.fillMaxSize().verticalScroll(scrollState)
-            else
-                Modifier.fillMaxSize()
+        val isTabletDevice = isATabletDevice(isPortrait, windowSize)
+        val modifier = if (isPortrait) {
+            Modifier.fillMaxSize()
+        } else {
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        }
 
         Column(
             modifier = modifier,
@@ -143,25 +156,36 @@ class MainActivity : ComponentActivity() {
                 Image(
                     painter = painterResource(imageId),
                     contentDescription = imageDescription,
-                    modifier = Modifier.size(height = 300.dp, width = 200.dp)
-                        .clip(RoundedCornerShape(20)),
+                    modifier = Modifier
+                        .size(
+                            height = if (isTabletDevice) 400.dp else 300.dp,
+                            width = if (isTabletDevice) 300.dp else 200.dp
+                        )
+                        .clip(RoundedCornerShape(15)),
                     contentScale = ContentScale.Crop
                 )
 
                 Card(
                     shape = CircleShape,
-                    modifier = Modifier.size(height = 60.dp, width = 70.dp)
-                        .padding(start = 12.dp, top = 12.dp),
+                    modifier = Modifier
+                        .size(
+                            height = if(isTabletDevice) 75.dp else 55.dp,
+                            width = if(isTabletDevice) 85.dp else 65.dp)
+                        .padding(
+                            start = if(isTabletDevice) 12.dp else 6.dp,
+                            top = if(isTabletDevice) 12.dp else 6.dp),
                     border = BorderStroke(width = 1.dp, color = Color.Black)
                 ) {
                     Row(
-                        modifier = Modifier.background(color = Color.White),
+                        modifier = Modifier
+                            .background(color = Color.White)
+                            .clickable { expandable = !expandable },
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            modifier = Modifier.size(40.dp)
-                                .clickable { expandable = !expandable },
+                            modifier = Modifier
+                                .size(if(isTabletDevice) 50.dp else 35.dp),
                             color = Color.White
                         ) {
                             WineCupProgress(mapOfDrink[id])
@@ -181,8 +205,8 @@ class MainActivity : ComponentActivity() {
 
             SSJetPackComposeProgressButton(
                 type = SSButtonType.CUSTOM,
-                width = 200.dp,
-                height = 40.dp,
+                width = if (isTabletDevice) 250.dp else 200.dp,
+                height = if (isTabletDevice) 50.dp else 40.dp,
                 onClick = {
                     ssButtonState = SSButtonState.LOADING
                     if (mapOfDrink[id!!] == null) {
@@ -195,9 +219,13 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 buttonState = ssButtonState,
-                assetColor = Color.Black,
+                assetColor = Color.White,
                 text = name,
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+                fontSize = if (isTabletDevice)
+                    MaterialTheme.typography.h5.fontSize
+                else
+                    MaterialTheme.typography.h6.fontSize,
+                colors = ButtonDefaults.buttonColors(backgroundColor = VoteButton),
                 customLoadingIconPainter = painterResource(R.drawable.loading_wine_cup),
                 customLoadingEffect = SSCustomLoadingEffect(
                     rotation = true,
@@ -206,7 +234,18 @@ class MainActivity : ComponentActivity() {
                 )
             )
 
-            Text(text = description, modifier = Modifier.padding(top = 4.dp))
+            Text(
+                text = description,
+                style = if (isTabletDevice)
+                    MaterialTheme.typography.h6
+                else
+                    MaterialTheme.typography.subtitle1,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .width(200.dp)
+                    .padding(top = 4.dp)
+            )
 
         }
     }
@@ -221,12 +260,34 @@ class MainActivity : ComponentActivity() {
                     }
                 },
                 update = {
-                    var level = 0
-                    if (votes != null) {
-                        level = 200 * votes
-                    }
-                    it.background.level = level
+                    it.background.level = if(votes != null) 200 * votes else 1
                 }
             )
         }
+
+    private fun isATabletDevice(isPortrait: Boolean, windowSize: WindowSize): Boolean {
+        /*
+        * function used to set the size values of the elements according
+        * to the type of device (cell phone, tablet)
+        */
+        val isATabletDevice: Boolean
+        if (isPortrait) {
+            isATabletDevice = windowSize.width != WindowType.Compact
+            /*
+            * if the device is in portrait mode, windowSize.width is used to know
+            * if it is a cell phone or a tablet.
+            * If it is different of WindowType.Compact it means that it is a tablet,
+            * otherwise it is a cell phone.
+            */
+        } else {
+            isATabletDevice = windowSize.height != WindowType.Compact
+            /*
+            * if the device is in landscape mode, windowSize.height is used to know
+            * if it is a cell phone or a tablet.
+            * If it is different to WindowType.Compact it means that it is a tablet,
+            * otherwise it is a cell phone.
+            */
+        }
+        return isATabletDevice
+    }
 }
