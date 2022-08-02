@@ -196,6 +196,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(end = 2.dp),
                                 text = "${mapOfDrink[id] ?: 0}",
                                 color = Color.Black,
+                                fontSize = MaterialTheme.typography.subtitle2.fontSize,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -222,9 +223,9 @@ class MainActivity : ComponentActivity() {
                 assetColor = Color.White,
                 text = name,
                 fontSize = if (isTabletDevice)
-                    MaterialTheme.typography.h5.fontSize
+                    MaterialTheme.typography.h2.fontSize
                 else
-                    MaterialTheme.typography.h6.fontSize,
+                    MaterialTheme.typography.h4.fontSize,
                 colors = ButtonDefaults.buttonColors(backgroundColor = VoteButton),
                 customLoadingIconPainter = painterResource(R.drawable.loading_wine_cup),
                 customLoadingEffect = SSCustomLoadingEffect(
@@ -237,9 +238,9 @@ class MainActivity : ComponentActivity() {
             Text(
                 text = description,
                 style = if (isTabletDevice)
-                    MaterialTheme.typography.h6
+                    MaterialTheme.typography.h4
                 else
-                    MaterialTheme.typography.subtitle1,
+                    MaterialTheme.typography.h5,
                 color = Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier

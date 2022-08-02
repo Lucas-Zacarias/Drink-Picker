@@ -28,7 +28,7 @@ object DrinksMocks {
             .name("John Joseph Foos")
             .imageId(R.drawable.drink_john_joseph_foos)
             .imageDescription("Imagen del trago John Joseph Foos")
-            .description("Impronta, cítrico, intenso, fresco")
+            .description("Impronta, cítrico, intenso y fresco")
             .build()
 
         return listOf(vino1, vino2, vino3)

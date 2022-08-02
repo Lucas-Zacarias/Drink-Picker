@@ -37,7 +37,7 @@ fun DrinkPickerTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compo
 
     MaterialTheme(
         colors = colors,
-        typography = Typography,
+        typography = RobotoTypography,
         shapes = Shapes,
         content = content
     )
