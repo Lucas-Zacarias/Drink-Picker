@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.drinkpicker.R
 import com.example.drinkpicker.data.models.Drink
 import com.example.drinkpicker.ui.theme.DrinkPickerTheme
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun DrinkList(drinks: List<Drink>) {
-        var orientation by remember { mutableStateOf(resources.configuration.orientation) }
+        val orientation = resources.configuration.orientation
 
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -122,7 +123,7 @@ class MainActivity : ComponentActivity() {
     ) {
         var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
         val scrollState = rememberScrollState()
-        var modifier =
+        val modifier =
             if(resources.configuration.orientation == ORIENTATION_LANDSCAPE)
                 Modifier
                     .fillMaxSize()
@@ -160,7 +161,7 @@ class MainActivity : ComponentActivity() {
                 buttonState = ssButtonState,
                 assetColor = Color.White,
                 text = name,
-                fontSize = MaterialTheme.typography.h2.fontSize,
+                fontSize = 24.sp,
                 colors = ButtonDefaults.buttonColors(backgroundColor = VoteButton),
                 customLoadingIconPainter = painterResource(R.drawable.loading_wine_cup),
                 customLoadingEffect = SSCustomLoadingEffect(
@@ -171,7 +172,7 @@ class MainActivity : ComponentActivity() {
             )
 
             Text(text = description,
-                style = MaterialTheme.typography.h3,
+                fontSize = 20.sp,
                 modifier = Modifier.padding(top = 4.dp),
                 color = Color.Black)
 
