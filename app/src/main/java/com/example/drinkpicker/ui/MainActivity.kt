@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
             DrinkPickerTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White) {
+                    color = Color.Black) {
                     Components()
                 }
             }
@@ -173,7 +173,7 @@ class MainActivity : ComponentActivity() {
             Text(text = description,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(top = 4.dp),
-                color = Color.Black)
+                color = Color.White)
 
         }
     }
