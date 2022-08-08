@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.drinkpicker.R
 import com.example.drinkpicker.data.models.Drink
 import com.example.drinkpicker.ui.theme.DrinkPickerTheme
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                 val windowSize = rememberWindowSize()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.White
+                    color = Color.Black
                 ) {
                     Components(windowSize = windowSize)
                 }
@@ -63,119 +64,120 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    @Composable
-    fun Components(windowSize: WindowSize) {
-        DrinkList(drinks = viewModel.drinkMockList.value, windowSize = windowSize)
-    }
-
-    @Composable
-    fun DrinkList(drinks: List<Drink>, windowSize: WindowSize) {
-        val orientation = resources.configuration.orientation
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
-            ) {
-                items(
-                    items = drinks,
-                    key = { drink ->
-                        drink.id!!
-                    }) { drink ->
-                    DrinkItem(drink, isPortrait = true, windowSize)
-                }
-            }
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            LazyRow(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
-            ) {
-                items(
-                    items = drinks,
-                    key = { drink ->
-                        drink.id!!
-                    }) { drink ->
-                    DrinkItem(drink, isPortrait = false, windowSize)
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun DrinkItem(drink: Drink, isPortrait: Boolean, windowSize: WindowSize) {
-        DrinkView(
-            name = drink.name ?: "",
-            description = drink.description ?: "",
-            imageId = drink.imageId!!,
-            imageDescription = drink.imageDescription ?: "",
-            isPortrait = isPortrait,
-            windowSize = windowSize
-        )
-    }
-
-
-    @OptIn(ExperimentalAnimationApi::class)
-    @Composable
-    fun DrinkView(
-        name: String = "",
-        description: String = "",
-        imageId: Int,
-        imageDescription: String = "",
-        isPortrait: Boolean,
-        windowSize: WindowSize
-    ) {
-        var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
-        val scrollState = rememberScrollState()
-        val isTabletDevice = isATabletDevice(isPortrait, windowSize)
-        val modifier = if (isPortrait) {
-            Modifier.fillMaxSize()
-        } else {
-            Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
+        @Composable
+        fun Components(windowSize: WindowSize) {
+            DrinkList(drinks = viewModel.drinkMockList.value, windowSize = windowSize)
         }
 
-        Column(
-            modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
+        @Composable
+        fun DrinkList(drinks: List<Drink>, windowSize: WindowSize) {
+            val orientation = resources.configuration.orientation
 
-            Image(
-                painter = painterResource(imageId),
-                contentDescription = imageDescription,
-                modifier = Modifier
-                    .size(
-                        height = if (isTabletDevice) 400.dp else 300.dp,
-                        width = if (isTabletDevice) 300.dp else 200.dp
-                    )
-                    .clip(RoundedCornerShape(10)),
-                contentScale = ContentScale.Crop
-            )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            SSJetPackComposeProgressButton(
-                type = SSButtonType.CUSTOM,
-                width = if (isTabletDevice) 250.dp else 200.dp,
-                height = if (isTabletDevice) 50.dp else 40.dp,
-                onClick = {
-                    ssButtonState = SSButtonState.LOADING
-                    Timer().schedule(1000) {
-                        ssButtonState = SSButtonState.IDLE
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
+                ) {
+                    items(
+                        items = drinks,
+                        key = { drink ->
+                            drink.id!!
+                        }) { drink ->
+                        DrinkItem(drink, isPortrait = true, windowSize)
                     }
-                },
-                buttonState = ssButtonState,
-                assetColor = Color.White,
-                text = name,
-                fontSize = if (isTabletDevice)
-                    MaterialTheme.typography.h2.fontSize
+                }
+            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                LazyRow(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
+                ) {
+                    items(
+                        items = drinks,
+                        key = { drink ->
+                            drink.id!!
+                        }) { drink ->
+                        DrinkItem(drink, isPortrait = false, windowSize)
+                    }
+                }
+            }
+        }
+
+        @Composable
+        fun DrinkItem(drink: Drink, isPortrait: Boolean, windowSize: WindowSize) {
+            DrinkView(
+                name = drink.name ?: "",
+                description = drink.description ?: "",
+                imageId = drink.imageId!!,
+                imageDescription = drink.imageDescription ?: "",
+                isPortrait = isPortrait,
+                windowSize = windowSize
+            )
+        }
+
+
+        @OptIn(ExperimentalAnimationApi::class)
+        @Composable
+        fun DrinkView(
+            name: String = "",
+            description: String = "",
+            imageId: Int,
+            imageDescription: String = "",
+            isPortrait: Boolean,
+            windowSize: WindowSize
+        ) {
+            var ssButtonState by remember { mutableStateOf(SSButtonState.IDLE) }
+            val scrollState = rememberScrollState()
+            val isTabletDevice = isATabletDevice(isPortrait, windowSize)
+            val modifier = if (isPortrait) {
+                Modifier.fillMaxSize()
+            } else {
+                Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+            }
+
+            Column(
+                modifier = modifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                Image(
+                    painter = painterResource(imageId),
+                    contentDescription = imageDescription,
+                    modifier = Modifier
+                        .size(
+                            height = if (isTabletDevice) 400.dp else 300.dp,
+                            width = if (isTabletDevice) 300.dp else 200.dp
+                        )
+                        .clip(RoundedCornerShape(10)),
+                    contentScale = ContentScale.Crop
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                SSJetPackComposeProgressButton(
+                    type = SSButtonType.CUSTOM,
+                    width = if (isTabletDevice) 250.dp else 200.dp,
+                    height = if (isTabletDevice) 50.dp else 40.dp,
+                    onClick = {
+                        ssButtonState = SSButtonState.LOADING
+                        Timer().schedule(1000) {
+                            ssButtonState = SSButtonState.IDLE
+                        }
+                    },
+                    buttonState = ssButtonState,
+                    assetColor = Color.White,
+                    text = name,
+                        fontSize = if (isTabletDevice)
+                    MaterialTheme.typography.h5.fontSize
                 else
-                    MaterialTheme.typography.h4.fontSize,
+                    MaterialTheme.typography.h6.fontSize,
                 colors = ButtonDefaults.buttonColors(backgroundColor = VoteButton),
                 customLoadingIconPainter = painterResource(R.drawable.loading_wine_cup),
                 customLoadingEffect = SSCustomLoadingEffect(
@@ -183,47 +185,45 @@ class MainActivity : ComponentActivity() {
                     zoomInOut = false,
                     colorChanger = false
                 )
-            )
+                )
 
-            Text(
-                text = description,
-                style = if (isTabletDevice)
-                    MaterialTheme.typography.h4
-                else
-                    MaterialTheme.typography.h5,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .width(200.dp)
-                    .padding(top = 4.dp)
-            )
 
+                Text(
+                    text = description,
+                    fontSize = if(isTabletDevice) 18.sp else 16.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .width(200.dp)
+                        .padding(top = 4.dp)
+                )
+
+            }
         }
-    }
 
-    private fun isATabletDevice(isPortrait: Boolean, windowSize: WindowSize): Boolean {
-        /*
+        private fun isATabletDevice(isPortrait: Boolean, windowSize: WindowSize): Boolean {
+            /*
         * function used to set the size values of the elements according
         * to the type of device (cell phone, tablet)
         */
-        val isATabletDevice: Boolean
-        if (isPortrait) {
-            isATabletDevice = windowSize.width != WindowType.Compact
-            /*
+            val isATabletDevice: Boolean
+            if (isPortrait) {
+                isATabletDevice = windowSize.width != WindowType.Compact
+                /*
             * if the device is in portrait mode, windowSize.width is used to know
             * if it is a cell phone or a tablet.
             * If it is different of WindowType.Compact it means that it is a tablet,
             * otherwise it is a cell phone.
             */
-        } else {
-            isATabletDevice = windowSize.height != WindowType.Compact
-            /*
+            } else {
+                isATabletDevice = windowSize.height != WindowType.Compact
+                /*
             * if the device is in landscape mode, windowSize.height is used to know
             * if it is a cell phone or a tablet.
             * If it is different to WindowType.Compact it means that it is a tablet,
             * otherwise it is a cell phone.
             */
+            }
+            return isATabletDevice
         }
-        return isATabletDevice
-    }
 }
