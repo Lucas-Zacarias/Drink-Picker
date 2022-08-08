@@ -30,9 +30,6 @@ fun rememberWindowSize(): WindowSize {
         mutableStateOf(configuration.screenHeightDp)
     }
 
-    Log.i("Device width", "$screenWidth")
-    Log.i("Device height","$screenHeight")
-
     return WindowSize(
         width = getScreenWidth(screenWidth),
         height = getScreenHeight(screenHeight)
