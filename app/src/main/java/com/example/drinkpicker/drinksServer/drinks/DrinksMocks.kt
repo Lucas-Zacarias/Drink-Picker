@@ -25,7 +25,7 @@ object DrinksMocks {
 
         val vino3 = Drink.Builder()
             .id(333333L)
-            .name("182 Legend")
+            .name("Legend 182")
             .imageId(R.drawable.drink_legend_182)
             .imageDescription("Imagen del trago 182 Legend")
             .description("Dulce, fresco y sofisticado")
